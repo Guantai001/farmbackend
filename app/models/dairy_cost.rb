@@ -1,0 +1,2 @@
+class DairyCost < ApplicationRecord
+end

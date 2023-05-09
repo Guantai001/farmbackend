@@ -1,0 +1,2 @@
+module DairyCostsHelper
+end
