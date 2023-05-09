@@ -1,0 +1,19 @@
+current directory: /home/guantai/farmbackend/vendor/bundle/ruby/3.2.0/gems/debug-1.7.2/ext/debug
+/home/guantai/.rvm/rubies/ruby-3.2.2/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /home/guantai/farmbackend/vendor/bundle/ruby/3.2.0/gems/debug-1.7.2/ext/debug
+make DESTDIR\= sitearchdir\=./.gem.20230508-11659-b4mpzf sitelibdir\=./.gem.20230508-11659-b4mpzf clean
+
+current directory: /home/guantai/farmbackend/vendor/bundle/ruby/3.2.0/gems/debug-1.7.2/ext/debug
+make DESTDIR\= sitearchdir\=./.gem.20230508-11659-b4mpzf sitelibdir\=./.gem.20230508-11659-b4mpzf
+compiling debug.c
+compiling iseq_collector.c
+linking shared-object debug/debug.so
+
+current directory: /home/guantai/farmbackend/vendor/bundle/ruby/3.2.0/gems/debug-1.7.2/ext/debug
+make DESTDIR\= sitearchdir\=./.gem.20230508-11659-b4mpzf sitelibdir\=./.gem.20230508-11659-b4mpzf install
+/usr/bin/install -c -m 0755 debug.so ./.gem.20230508-11659-b4mpzf/debug
+
+current directory: /home/guantai/farmbackend/vendor/bundle/ruby/3.2.0/gems/debug-1.7.2/ext/debug
+make DESTDIR\= sitearchdir\=./.gem.20230508-11659-b4mpzf sitelibdir\=./.gem.20230508-11659-b4mpzf clean
