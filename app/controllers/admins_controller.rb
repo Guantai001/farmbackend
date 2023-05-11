@@ -57,7 +57,7 @@ end
 private
 
 def admin_params
-    params.permit(:name, :email, :phone, :password_digest, :image)
+    params.permit(:name, :email, :phone, :password, :image)
 end
 
 

@@ -137,12 +137,6 @@ class MilksController < ApplicationController
         render json: { message: "Milk records sorted by month", milk: milk_array }
       end
       
-      
-      
-      
-      
-      
-
     # sort milk by year
     def sort_by_year
         # get all the milk records
