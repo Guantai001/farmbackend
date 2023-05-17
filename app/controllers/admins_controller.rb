@@ -7,7 +7,7 @@ class AdminsController < ApplicationController
   # get all Admins
   def index
     admin = Admin.all
-    render json: admin
+    render json: admin 
 end
 
 # get one Admin
@@ -34,7 +34,7 @@ def create
 # update Admin
 def update
  admin = Admin.find(params[:id])
- admin.update!(admin_params)
+ admin.update(admin_params)
 render json: admin, status: :accepted
 end
 

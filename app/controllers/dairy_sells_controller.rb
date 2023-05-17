@@ -79,7 +79,7 @@ class DairySellsController < ApplicationController
     private
 
     def dairy_sell_params
-        params.permit(:item , :price, :date)
+        params.permit(:item , :price, :date,:admin_id)
     end
 
     def render_unprocessable_entity_response(invalid)

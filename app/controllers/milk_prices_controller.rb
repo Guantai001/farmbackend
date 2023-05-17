@@ -24,16 +24,22 @@ class MilkPricesController < ApplicationController
     # create new MilkPrice
 
     def create
-       if MilkPrice.all.empty?
+    #    if MilkPrice.all.empty?
+    #     milk_price = MilkPrice.new(milk_price_params)
+    #     if milk_price.save
+    #         render json: milk_price.as_json(except: [:milk_price_image]), status: :created
+    #     else
+    #         render json: { error: milk_price.errors.full_messages.join(', ') }, status: :unprocessable_entity
+    #     end
+    #    else
+    #     render json: { error: "MilkPrice already exists" }, status: :unprocessable_entity
+    #    end
         milk_price = MilkPrice.new(milk_price_params)
         if milk_price.save
-            render json: milk_price.as_json(except: [:milk_price_image]), status: :created
+            render json: milk_price.as_json, status: :created
         else
             render json: { error: milk_price.errors.full_messages.join(', ') }, status: :unprocessable_entity
         end
-       else
-        render json: { error: "MilkPrice already exists" }, status: :unprocessable_entity
-       end
     end
 
     # update MilkPrice
@@ -56,7 +62,7 @@ class MilkPricesController < ApplicationController
     private
 
     def milk_price_params
-        params.permit(:price)
+        params.permit(:price,:admin_id)
     end
 
     def render_unprocessable_entity_response(invalid)

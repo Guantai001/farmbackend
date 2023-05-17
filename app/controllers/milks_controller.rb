@@ -30,7 +30,6 @@ class MilksController < ApplicationController
                 render json: { message: "Milk Added Successfully" }
             else 
                 render json: milk, status: :unprocessable_entity
-
             end
         else
             render json: { error: "Milk already exists for this animal on this date" }

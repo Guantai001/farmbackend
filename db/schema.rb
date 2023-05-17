@@ -66,22 +66,28 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_09_102025) do
     t.string "date"
     t.integer "price"
     t.string "item"
+    t.bigint "admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_dairy_costs_on_admin_id"
   end
 
   create_table "dairy_sells", force: :cascade do |t|
     t.string "date"
     t.integer "price"
     t.string "item"
+    t.bigint "admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_dairy_sells_on_admin_id"
   end
 
   create_table "milk_prices", force: :cascade do |t|
     t.integer "price"
+    t.bigint "admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_milk_prices_on_admin_id"
   end
 
   create_table "milks", force: :cascade do |t|
@@ -96,5 +102,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_09_102025) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cows", "admins"
+  add_foreign_key "dairy_costs", "admins"
+  add_foreign_key "dairy_sells", "admins"
+  add_foreign_key "milk_prices", "admins"
   add_foreign_key "milks", "cows"
 end

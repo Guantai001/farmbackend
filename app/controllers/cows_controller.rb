@@ -6,15 +6,14 @@ class CowsController < ApplicationController
   # get all Admins
   def index
     cows = Cow.all
-    # put image_url in the attributes
-    render json: cows, methods: [:image, :image_url]
+    render json: cows
 end
 
 # get one Admin
 def show
     cows = Cow.find_by(id: params[:id])
     if cows
-      render json: cows, methods: [:image]
+      render json: cows
     else
       # If the id is not found 
       render json: { error: "Animal with id #{params[:id]} not found" }, status: :not_found
@@ -25,7 +24,7 @@ def show
 def create
   cow = Cow.new(cow_params)
   if cow.save
-    render json: cow, status: :created
+    render json: cow.as_json(except: [:image]), status: :created
   else
     render json: { error: cow.errors.full_messages }, status: :unprocessable_entity
   end
