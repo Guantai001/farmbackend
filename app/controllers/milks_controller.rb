@@ -1,6 +1,6 @@
 class MilksController < ApplicationController
-  skip_before_action :authorized, only: [:index, :create, :show, :update, :destroy, :milk_kgs, :total_milk, 
-    :total, :total_animal, :sort_by_month, :admin_milk]
+  skip_before_action :authorized, only: [:index, :create, :show, :update, :destroy, :milk_kgs, :total_milk,
+                                         :total, :total_animal, :sort_by_month, :admin_milk]
 
   rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
 
@@ -107,30 +107,32 @@ class MilksController < ApplicationController
     render json: { message: "Total milk kgs for animal with id #{animal_id}: #{total}" }
   end
 
-  def sort_by_month
-    milk = Milk.all
-    milk_by_month = milk.group_by { |m| [Date.parse(m.date).strftime("%B"), m.admin_id] }.transform_values do |milk_records|
-      {
-        total_amount: milk_records.sum(&:amount),
-        milk_records: milk_records.sort_by(&:amount).reverse,
-      }
-    end
-    months = Date::MONTHNAMES[1..12]
-    milk_array = []
-    months.each do |month|
-      month_data = milk_by_month.select { |m| m[0][0] == month }
-      admin_data = {}
-      month_data.each do |m|
-        admin_id = m[0][1]
-        admin_data[admin_id] = {
-          total_amount: m[1][:total_amount],
-          milk_records: m[1][:milk_records],
-        }
-      end
-      milk_array << { month: month, admin_data: admin_data }
-    end
-    render json: { message: "Milk records sorted by month and admin", milk: milk_array }
-  end
+  #   def sort_by_month
+  #     milk = Milk.all
+  #     milk_by_month = milk.group_by { |m| [Date.parse(m.date).strftime("%B"), m.admin_id] }.transform_values do |milk_records|
+  #       {
+  #         total_amount: milk_records.sum(&:amount),
+  #         milk_records: milk_records.sort_by(&:amount).reverse,
+  #       }
+  #     end
+  #     months = Date::MONTHNAMES.compact[1..12]
+  #     milk_array = []
+  #     months.each do |month|
+  #       month_data = milk_by_month.select { |m| m[0][0] == month }
+  #       admin_data = {}
+  #       month_data.each do |m|
+  #         admin_id = m[0][1]
+  #         admin_data[admin_id] = {
+  #           total_amount: m[1][:total_amount],
+  #           milk_records: m[1][:milk_records],
+  #           profit_loss: calculate_profit_loss(m[1][:milk_records], admin_id),
+  #           money_made: calculate_money_made(m[1][:milk_records], admin_id),
+  #         }
+  #       end
+  #       milk_array << { month: month, admin_data: admin_data }
+  #     end
+  #     render json: { message: "Milk records sorted by month and admin", milk: milk_array }
+  #   end
 
   def admin_milk
     milks = Milk.all
@@ -149,6 +151,16 @@ class MilksController < ApplicationController
     end
 
     render json: { message: "Milk records sorted by month and admin", overall_admin_totals: overall_admin_totals, monthly_admin_totals: monthly_admin_totals }
+  end
+
+  def calculate_profit_loss(milk_records, admin_id)
+    admin = Admin.find(admin_id)
+    milk_records.sum { |record| record.amount * admin.milk_prices.find_by(date: record.date).price }
+  end
+
+  def calculate_money_made(milk_records, admin_id)
+    admin = Admin.find(admin_id)
+    milk_records.sum { |record| record.amount * admin.milk_prices.find_by(date: record.date).price }
   end
 
   private
