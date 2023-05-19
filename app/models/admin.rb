@@ -6,6 +6,7 @@ class Admin < ApplicationRecord
     has_many :milk_prices
     has_many :dairy_costs
     has_many :dairy_sells
+    has_many :milks, through: :cows
 
     def image_url
         Rails.application.routes.url_helpers.url_for(image) if image.attached?

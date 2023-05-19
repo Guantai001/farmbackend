@@ -94,8 +94,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_09_102025) do
     t.string "date"
     t.integer "amount"
     t.bigint "cow_id", null: false
+    t.bigint "admin_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_milks_on_admin_id"
     t.index ["cow_id"], name: "index_milks_on_cow_id"
   end
 
@@ -105,5 +107,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_09_102025) do
   add_foreign_key "dairy_costs", "admins"
   add_foreign_key "dairy_sells", "admins"
   add_foreign_key "milk_prices", "admins"
+  add_foreign_key "milks", "admins"
   add_foreign_key "milks", "cows"
 end
