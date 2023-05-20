@@ -56,4 +56,5 @@ Rails.application.routes.draw do
   post "/prices", to: "milk_prices#create"
   patch "/prices/:id", to: "milk_prices#update"
   delete "/prices/:id", to: "milk_prices#destroy"
+  get "/last", to: "milk_prices#latest"
 end
