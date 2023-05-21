@@ -57,4 +57,5 @@ Rails.application.routes.draw do
   patch "/prices/:id", to: "milk_prices#update"
   delete "/prices/:id", to: "milk_prices#destroy"
   get "/last", to: "milk_prices#latest"
+  get "/profit_loss", to: "milk_prices#profit_loss"
 end

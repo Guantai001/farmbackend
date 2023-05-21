@@ -77,54 +77,54 @@ class DairyCostsController < ApplicationController
   end
 
 
-  def sort_costs_by_month
-    start_date = Date.new(2023, 1, 1)
-    end_date = Date.new(2023, 12, 31)
+  # def sort_costs_by_month
+  #   start_date = Date.new(2023, 1, 1)
+  #   end_date = Date.new(2023, 12, 31)
 
-    sell_hash = {}
+  #   sell_hash = {}
 
-    (start_date..end_date).each do |date|
-      month = date.strftime("%B")
-      unless sell_hash.key?(month)
-        start_date_str = date.at_beginning_of_month.strftime("%Y-%m-%d")
-        end_date_str = date.at_end_of_month.strftime("%Y-%m-%d")
+  #   (start_date..end_date).each do |date|
+  #     month = date.strftime("%B")
+  #     unless sell_hash.key?(month)
+  #       start_date_str = date.at_beginning_of_month.strftime("%Y-%m-%d")
+  #       end_date_str = date.at_end_of_month.strftime("%Y-%m-%d")
 
-        sells = DairyCost.where(date: start_date_str..end_date_str)
+  #       sells = DairyCost.where(date: start_date_str..end_date_str)
 
-        admin_totals = sells.group_by(&:admin_id).transform_values { |sells| sells.sum(&:price) }
-        sell_records = sells.sort_by(&:price).reverse
+  #       admin_totals = sells.group_by(&:admin_id).transform_values { |sells| sells.sum(&:price) }
+  #       sell_records = sells.sort_by(&:price).reverse
 
-        sell_hash[month] = {
-          month: month,
-          admin_totals: admin_totals,
-          sell_records: sell_records,
-        }
-      end
-    end
+  #       sell_hash[month] = {
+  #         month: month,
+  #         admin_totals: admin_totals,
+  #         sell_records: sell_records,
+  #       }
+  #     end
+  #   end
 
-    sell_array = sell_hash.values
+  #   sell_array = sell_hash.values
 
-    render json: { message: "Dairy costs by Month", sell_array: sell_array }
-  end
+  #   render json: { message: "Dairy costs by Month", sell_array: sell_array }
+  # end
 
-  def admin_totals
-    sells = DairyCost.all
-    overall_admin_totals = sells.group_by(&:admin_id).transform_values { |sells| sells.sum(&:price) }
+  # def admin_totals
+  #   sells = DairyCost.all
+  #   overall_admin_totals = sells.group_by(&:admin_id).transform_values { |sells| sells.sum(&:price) }
 
-    monthly_admin_totals = {}
-    start_date = Date.new(2023, 1, 1)
-    end_date = Date.new(2023, 12, 31)
+  #   monthly_admin_totals = {}
+  #   start_date = Date.new(2023, 1, 1)
+  #   end_date = Date.new(2023, 12, 31)
 
-    (start_date..end_date).each do |date|
-      start_date_str = date.at_beginning_of_month.strftime("%Y-%m-%d")
-      end_date_str = date.at_end_of_month.strftime("%Y-%m-%d")
+  #   (start_date..end_date).each do |date|
+  #     start_date_str = date.at_beginning_of_month.strftime("%Y-%m-%d")
+  #     end_date_str = date.at_end_of_month.strftime("%Y-%m-%d")
 
-      monthly_sells = sells.where(date: start_date_str..end_date_str)
-      monthly_admin_totals[date.strftime("%B")] = monthly_sells.group_by(&:admin_id).transform_values { |sells| sells.sum(&:price) }
-    end
+  #     monthly_sells = sells.where(date: start_date_str..end_date_str)
+  #     monthly_admin_totals[date.strftime("%B")] = monthly_sells.group_by(&:admin_id).transform_values { |sells| sells.sum(&:price) }
+  #   end
 
-    render json: { message: "Admin Totals", overall_admin_totals: overall_admin_totals, monthly_admin_totals: monthly_admin_totals }
-  end
+  #   render json: { message: "Admin Totals", overall_admin_totals: overall_admin_totals, monthly_admin_totals: monthly_admin_totals }
+  # end
 
   private
 

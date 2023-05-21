@@ -1,5 +1,5 @@
 class MilkPricesController < ApplicationController
-  skip_before_action :authorized, only: [:index, :create, :show, :update, :destroy, :latest]
+  skip_before_action :authorized, only: [:index, :create, :show, :update, :destroy, :latest, :profit_loss]
 
   rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
 
@@ -57,75 +57,104 @@ class MilkPricesController < ApplicationController
   end
 
   #get the data of the admin_milk
-  def latest_admin_milk
-    milks = Milk.all
-    overall_admin_totals = milks.group_by(&:admin_id).transform_values { |milks| milks.sum(&:amount) }
+  # def latest_admin_milk
+  #   milks = Milk.all
+  #   overall_admin_totals = milks.group_by(&:admin_id).transform_values { |milks| milks.sum(&:amount) }
 
-    monthly_admin_totals = {}
-    start_date = Date.new(2023, 1, 1)
-    end_date = Date.new(2023, 12, 31)
+  #   monthly_admin_totals = {}
+  #   start_date = Date.new(2023, 1, 1)
+  #   end_date = Date.new(2023, 12, 31)
 
-    (start_date..end_date).each do |date|
-      start_date_str = date.at_beginning_of_month.strftime("%Y-%m-%d")
-      end_date_str = date.at_end_of_month.strftime("%Y-%m-%d")
+  #   (start_date..end_date).each do |date|
+  #     start_date_str = date.at_beginning_of_month.strftime("%Y-%m-%d")
+  #     end_date_str = date.at_end_of_month.strftime("%Y-%m-%d")
 
-      monthly_sells = milks.where(date: start_date_str..end_date_str)
-      monthly_admin_totals[date.strftime("%B")] = monthly_sells.group_by(&:admin_id).transform_values { |milks| milks.sum(&:amount) }
-    end
-
-    render json: { message: "Milk records sorted by month and admin", overall_admin_totals: overall_admin_totals, monthly_admin_totals: monthly_admin_totals }
-  end
-
-  #   def latest
-  #     admins = Admin.all
-  #     result = []
-
-  #     admins.each do |admin|
-  #       monthly_totals = {}
-  #       milk_price = admin.milk_prices.order(created_at: :desc).first
-
-  #       (1..12).each do |month_number|
-  #         month = Date.new(Date.today.year, month_number, 1).strftime("%B %Y")
-  #         start_date = Date.new(Date.today.year, month_number, 1)
-  #         end_date = Date.new(Date.today.year, month_number, -1)
-
-  #         milk_records = admin.milks.where(date: start_date..end_date)
-  #         total_amount = milk_records.sum(:amount)
-  #         total = milk_price ? milk_price.price * total_amount : nil
-  #         total_amount = total_amount > 0 ? total_amount : nil
-
-  #         monthly_totals[month] = { price: milk_price&.price, total_amount: total_amount, total: total }
-  #       end
-
-  #       result << { admin_id: admin.id, monthly_totals: monthly_totals }
-  #     end
-
-  #     render json: result
+  #     monthly_sells = milks.where(date: start_date_str..end_date_str)
+  #     monthly_admin_totals[date.strftime("%B")] = monthly_sells.group_by(&:admin_id).transform_values { |milks| milks.sum(&:amount) }
   #   end
 
-  def latest
+  #   render json: { message: "Milk records sorted by month and admin", overall_admin_totals: overall_admin_totals, monthly_admin_totals: monthly_admin_totals }
+  # end
+
+  # # def latest
+  #   admins = Admin.all
+  #   milks = Milk.all
+
+  #   overall_admin_totals = milks.group_by(&:admin_id).transform_values { |milks| milks.sum(&:amount) }
+
+  #   monthly_admin_totals = {}
+  #   start_date = Date.new(2023, 1, 1)
+  #   end_date = Date.new(2023, 12, 31)
+
+  #   (start_date..end_date).each do |date|
+  #     start_date_str = date.at_beginning_of_month.strftime("%Y-%m-%d")
+  #     end_date_str = date.at_end_of_month.strftime("%Y-%m-%d")
+
+  #     monthly_sells = milks.where(date: start_date_str..end_date_str)
+  #     monthly_admin_totals[date.strftime("%B")] = monthly_sells.group_by(&:admin_id).transform_values do |milks|
+  #       milks.sum do |milk|
+  #         admin_price = milk.admin.milk_prices.order(created_at: :desc).first&.price.to_f
+  #         milk.amount * admin_price
+  #       end
+  #     end
+  #   end
+
+  #   render json: { message: "Milk records sorted by month and admin", overall_admin_totals: overall_admin_totals, monthly_admin_totals: monthly_admin_totals }
+  # end
+
+  def profit_loss
     admins = Admin.all
     milks = Milk.all
-    overall_admin_totals = milks.group_by(&:admin_id).transform_values { |milks| milks.sum(&:amount) }
+    costs = DairyCost.all
+    sells = DairySell.all
 
     monthly_admin_totals = {}
+    monthly_total_sells = {}
+    monthly_total_costs = {}
+
     start_date = Date.new(2023, 1, 1)
     end_date = Date.new(2023, 12, 31)
 
     (start_date..end_date).each do |date|
-      start_date_str = date.at_beginning_of_month.strftime("%Y-%m-%d")
-      end_date_str = date.at_end_of_month.strftime("%Y-%m-%d")
+      month_str = date.strftime("%B")
+      monthly_admin_totals[month_str] = {}
+      monthly_total_sells[month_str] = 0
+      monthly_total_costs[month_str] = 0
 
-      monthly_sells = milks.where(date: start_date_str..end_date_str)
-      monthly_admin_totals[date.strftime("%B")] = monthly_sells.group_by(&:admin_id).transform_values do |milks|
-        milks.sum do |milk|
-          admin_price = milk.admin.milk_prices.order(created_at: :desc).first&.price.to_f
-          milk.amount * admin_price
-        end
+      admins.each do |admin|
+        admin_id = admin.id
+
+        monthly_milks = milks.where(admin_id: admin_id, date: date.at_beginning_of_month..date.at_end_of_month)
+        monthly_milk_amount = monthly_milks.sum(&:amount)
+
+        monthly_sells = sells.where(admin_id: admin_id, date: date.at_beginning_of_month..date.at_end_of_month)
+        monthly_sells_total = monthly_sells.sum(&:price)
+        monthly_total_sells[month_str] += monthly_sells_total
+
+        monthly_costs = costs.where(admin_id: admin_id, date: date.at_beginning_of_month..date.at_end_of_month)
+        monthly_costs_total = monthly_costs.sum(&:price)
+        monthly_total_costs[month_str] += monthly_costs_total
+
+        last_price_input = admin.milk_prices.order(created_at: :desc).first&.price.to_f
+        milk_amount_price = monthly_milk_amount * last_price_input
+
+        profit_loss_with_price = monthly_sells_total - monthly_costs_total + milk_amount_price
+
+        monthly_admin_totals[month_str][admin_id] = {
+          profit_loss: monthly_sells_total - monthly_costs_total == 0 ? nil : monthly_sells_total - monthly_costs_total,
+          milk_amount: monthly_milk_amount == 0 ? nil : monthly_milk_amount,
+          last_price_input: last_price_input == 0.0 ? nil : last_price_input,
+          milk_amount_price: milk_amount_price == 0.0 ? nil : milk_amount_price,
+          profit_loss_with_price: profit_loss_with_price == 0.0 ? nil : profit_loss_with_price,
+          total_sells: monthly_sells_total == 0 ? nil : monthly_sells_total,
+          total_costs: monthly_costs_total == 0 ? nil : monthly_costs_total,
+        }
       end
     end
 
-    render json: { message: "Milk records sorted by month and admin", overall_admin_totals: overall_admin_totals, monthly_admin_totals: monthly_admin_totals }
+    render json: {
+      monthly_admin_totals: monthly_admin_totals,
+    }
   end
 
   private
