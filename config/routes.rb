@@ -58,4 +58,27 @@ Rails.application.routes.draw do
   delete "/prices/:id", to: "milk_prices#destroy"
   get "/last", to: "milk_prices#latest"
   get "/profit_loss", to: "milk_prices#profit_loss"
+
+  # TEA_PRICE ROUTES
+  get "/tea_prices", to: "tea_prices#index"
+  get "/tea_prices/:id", to: "tea_prices#show"
+  post "/tea_prices", to: "tea_prices#create"
+  patch "/tea_prices/:id", to: "tea_prices#update"
+  delete "/tea_prices/:id", to: "tea_prices#destroy"
+  get "/tea_last", to: "tea_prices#latest"
+
+  # TEA_PICK ROUTES
+  get "/tea_picks", to: "tea_picks#index"
+  get "/tea_picks/:id", to: "tea_picks#show"
+  post "/tea_picks", to: "tea_picks#create"
+  patch "/tea_picks/:id", to: "tea_picks#update"
+  delete "/tea_picks/:id", to: "tea_picks#destroy"
+  get "/tea_pick/total", to: "tea_picks#total"
+
+  #TEA ROUTES
+  get "/tea", to: "teas#index"
+  get "/tea/:id", to: "teas#show"
+  post "/tea", to: "teas#create"
+  patch "/tea/:id", to: "teas#update"
+  delete "/tea/:id", to: "teas#destroy"
 end

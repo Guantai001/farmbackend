@@ -107,39 +107,29 @@ class MilkPricesController < ApplicationController
     milks = Milk.all
     costs = DairyCost.all
     sells = DairySell.all
-
     monthly_admin_totals = {}
     monthly_total_sells = {}
     monthly_total_costs = {}
-
-    start_date = Date.new(2023, 1, 1)
-    end_date = Date.new(2023, 12, 31)
-
+    end_date = Date.today
+    start_date = end_date - 11.months
     (start_date..end_date).each do |date|
       month_str = date.strftime("%B")
       monthly_admin_totals[month_str] = {}
       monthly_total_sells[month_str] = 0
       monthly_total_costs[month_str] = 0
-
       admins.each do |admin|
         admin_id = admin.id
-
         monthly_milks = milks.where(admin_id: admin_id, date: date.at_beginning_of_month..date.at_end_of_month)
         monthly_milk_amount = monthly_milks.sum(&:amount)
-
         monthly_sells = sells.where(admin_id: admin_id, date: date.at_beginning_of_month..date.at_end_of_month)
         monthly_sells_total = monthly_sells.sum(&:price)
         monthly_total_sells[month_str] += monthly_sells_total
-
         monthly_costs = costs.where(admin_id: admin_id, date: date.at_beginning_of_month..date.at_end_of_month)
         monthly_costs_total = monthly_costs.sum(&:price)
         monthly_total_costs[month_str] += monthly_costs_total
-
         last_price_input = admin.milk_prices.order(created_at: :desc).first&.price.to_f
         milk_amount_price = monthly_milk_amount * last_price_input
-
         profit_loss_with_price = monthly_sells_total - monthly_costs_total + milk_amount_price
-
         monthly_admin_totals[month_str][admin_id] = {
           profit_loss: monthly_sells_total - monthly_costs_total == 0 ? nil : monthly_sells_total - monthly_costs_total,
           milk_amount: monthly_milk_amount == 0 ? nil : monthly_milk_amount,
@@ -151,11 +141,11 @@ class MilkPricesController < ApplicationController
         }
       end
     end
-
     render json: {
       monthly_admin_totals: monthly_admin_totals,
     }
   end
+  
 
   private
 

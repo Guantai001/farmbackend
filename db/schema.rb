@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_09_102025) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_22_063816) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -101,6 +101,36 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_09_102025) do
     t.index ["cow_id"], name: "index_milks_on_cow_id"
   end
 
+  create_table "tea_picks", force: :cascade do |t|
+    t.integer "kilo"
+    t.integer "price"
+    t.string "date"
+    t.bigint "tea_id", null: false
+    t.bigint "admin_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_tea_picks_on_admin_id"
+    t.index ["tea_id"], name: "index_tea_picks_on_tea_id"
+  end
+
+  create_table "tea_prices", force: :cascade do |t|
+    t.integer "price"
+    t.bigint "admin_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_tea_prices_on_admin_id"
+  end
+
+  create_table "teas", force: :cascade do |t|
+    t.string "name"
+    t.string "locaation"
+    t.integer "size"
+    t.bigint "admin_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["admin_id"], name: "index_teas_on_admin_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "cows", "admins"
@@ -109,4 +139,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_09_102025) do
   add_foreign_key "milk_prices", "admins"
   add_foreign_key "milks", "admins"
   add_foreign_key "milks", "cows"
+  add_foreign_key "tea_picks", "admins"
+  add_foreign_key "tea_picks", "teas"
+  add_foreign_key "tea_prices", "admins"
+  add_foreign_key "teas", "admins"
 end
