@@ -123,7 +123,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_22_063816) do
 
   create_table "teas", force: :cascade do |t|
     t.string "name"
-    t.string "locaation"
+    t.string "location"
     t.integer "size"
     t.bigint "admin_id", null: false
     t.datetime "created_at", null: false
