@@ -73,7 +73,8 @@ Rails.application.routes.draw do
   post "/tea_picks", to: "tea_picks#create"
   patch "/tea_picks/:id", to: "tea_picks#update"
   delete "/tea_picks/:id", to: "tea_picks#destroy"
-  get "/tea_pick/total", to: "tea_picks#total"
+  get "/total", to: "tea_picks#last_one_month"
+  get "/last_month", to: "tea_picks#last_month"
 
   #TEA ROUTES
   get "/tea", to: "teas#index"
